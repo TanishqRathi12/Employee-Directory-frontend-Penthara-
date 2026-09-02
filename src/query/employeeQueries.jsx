@@ -7,7 +7,7 @@ import {
     getEmployees,
     getFilteredEmployees,
     getStatistics,
-} from "../services/EmployeeApi";
+} from "../services/employeeApi";
 
 /*
    Query Keys
