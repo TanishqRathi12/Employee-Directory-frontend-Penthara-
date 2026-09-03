@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";  // Importing the toast function from the sonner library for displaying notifications
 
 import {
-    addEmployee,
-    editEmployee,
-    getAllEmployees,
-    getEmployees,
-    getFilteredEmployees,
-    getStatistics,
+  addEmployee,
+  editEmployee,
+  getAllEmployees,
+  getEmployees,
+  getFilteredEmployees,
+  getStatistics,
 } from "../services/employeeApi";
 
 /*
@@ -63,7 +64,12 @@ export const useAddEmployee = () => {
   return useMutation({
     mutationFn: addEmployee,
 
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+
+      toast.success(`${variables?.name} added successfully!`); // Display a success notification using the toast function from the sonner library
+
+      // Invalidate employee lists
+
       queryClient.invalidateQueries({
         queryKey: employeeKeys.all,
       });
@@ -91,6 +97,8 @@ export const useEditEmployee = () => {
 
     onSuccess: (_, variables) => {
       const employeeId = variables?.id || variables?.employeeId;
+
+      toast.success(`${variables?.data?.name} updated successfully!`); // Display a success notification using the toast function from the sonner library
 
       // Invalidate employee lists
       queryClient.invalidateQueries({
@@ -126,4 +134,4 @@ export const useGetFilteredEmployees = (query) => {
     queryFn: () => getFilteredEmployees(query),
     enabled: !!query,
   });
-}
+};
