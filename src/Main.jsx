@@ -11,7 +11,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     {/* wrap the App component with the QueryClientProvider which provides the query client to all child components */}
     <QueryClientProvider client={queryClient}>
-      <Toaster closeButton richColors position="top-right" />  
+      <Toaster closeButton richColors position="top-right" /> 
       <App />
     </QueryClientProvider>
   </StrictMode>,
