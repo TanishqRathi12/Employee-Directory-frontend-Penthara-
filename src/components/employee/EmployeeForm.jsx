@@ -3,26 +3,28 @@ import Button from "../common/Button";
 import ErrorMessage from "../common/ErrorMessage";
 import Input from "../common/Input";
 
-const EmployeeForm = ({ defaultValues, onSubmit, onCancel, submitting,isEditing }) => {   // It will render the Employee Form with all the fields and validation using react-hook-form 
-  const { control, handleSubmit, setError } = useForm({ defaultValues });  // Initialize react-hook-form with default values
+const EmployeeForm = ({ defaultValues, onSubmit, onCancel, submitting,isEditing }) => {
+  const { control, handleSubmit, setError } = useForm({ defaultValues });
 
 
-  const handleFormSubmit = async (data) => {  // It will handle form submission and call onSubmit prop with form data
+  /**
+   * Submits employee data and maps duplicate-email responses to the email field.
+   */
+  const handleFormSubmit = async (data) => {
     try {
       await onSubmit(data);
     } catch (err) {
       if (err.response?.status === 400) {
         setError("email", {
           type: "server",
-          message: err.response.data?.message || "This email already exists.",  // Set error for email field if server returns 400 status code
+          message: err.response.data?.message || "This email already exists.",
         });
       }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} noValidate> {/* Form submission handler using react-hook-form handleSubmit*/}
-      {/* Input fields for employee details with validation using react-hook-form Controller component. */}
+    <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
       <Input
         name="name"
         control={control}
@@ -54,7 +56,6 @@ const EmployeeForm = ({ defaultValues, onSubmit, onCancel, submitting,isEditing 
         type="email"
         placeholder="Enter email"
       />)}
-      {/* Dropdown for department selection with validation using react-hook-form Controller component. */}
       <Controller
         name="department"
         control={control}

@@ -3,12 +3,12 @@ import useDebounce from "../../hooks/useDebounce";
 
 
 
-const EmployeeSearch = ({ onSearch, placeholder = "Search by name or department..." }) => {   // Controlled search input for name and department
-  const [query, setQuery] = useState("");   //State to hold the search query
-  const debouncedQuery = useDebounce(query, 400);  // It will prevent the frequent API calls by debouncing the search query with a delay of 400ms using a custom hook useDebounce
+const EmployeeSearch = ({ onSearch, placeholder = "Search by name or department..." }) => {
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 400);  // Debounce input to avoid frequent search requests.
 
   useEffect(() => {
-    onSearch?.(debouncedQuery.trim());  /* It will call the api and trim the spaces from the search */
+    onSearch?.(debouncedQuery.trim());  /* Trim whitespace before sending the search term. */
   }, [debouncedQuery, onSearch]);
 
   return (
@@ -30,7 +30,7 @@ const EmployeeSearch = ({ onSearch, placeholder = "Search by name or department.
         placeholder={placeholder}
         className="w-full rounded-lg border border-slate-400 bg-white py-2.5 pl-10 pr-10 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#0F62D6] focus:outline-none focus:ring-1 focus:ring-[#0F62D6]"
       />
-      {/* Clear button to reset the search query */}
+      {/* Show the clear action only when there is text to remove. */}
       {query && (      
         <button
           onClick={() => setQuery("")}

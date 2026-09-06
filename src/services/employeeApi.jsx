@@ -1,37 +1,49 @@
 import instance from "./axios";
 
-//API service for fetching the initial Employee data from backend using axios instance
+/**
+ * Fetches the initial employee data from the backend.
+ */
 export const getEmployees = async () => {
     const response = await instance.get("/");
     return response.data;
 }
 
-//API service for fetching all Employee data from backend using axios instance
+/**
+ * Fetches all employee data from the backend.
+ */
 export const getAllEmployees = async () => {
     const response = await instance.get("/all");
     return response.data;
 }
 
-//API service for editing an existing Employee data in backend using axios instance
+/**
+ * Adds a new employee to the backend.
+ */
 export const addEmployee = async (employeeData) => {
     const response = await instance.post("/add", employeeData);
     return response.data;
 }
 
 
-//API service for editing an existing Employee data in backend using axios instance
+/**
+ * Edits an existing employee's data in the backend.
+ */
 export const editEmployee = async (data) => {
     const response = await instance.patch(`/edit/${data.id}`, data.data);
     return response.data;
 }
 
-//API service for fetching Employee statistics data from backend using axios instance
+/**
+ * Fetches employee statistics data from the backend.
+ */
 export const getStatistics = async () => {
     const response = await instance.get("/stats");
     return response.data;
 }
 
-//API service for fetching filtered Employee data from backend using axios instance
+/**
+ * Fetches filtered employee data from the backend.
+ */
 export const getFilteredEmployees = async (query) => {
     const response = await instance.get(`/search?filter=${encodeURIComponent(query)}`);
     return response.data.data;

@@ -9,7 +9,6 @@ const EmployeeCard = ({ id, name, department, role }) => {
   const { mutateAsync: editEmployee, isPending } = useEditEmployee();
 
   useEffect(() => {
-    // Prevent background scrolling when modal is open
     document.body.style.overflow = isModalOpen ? "hidden" : "";
 
     return () => {

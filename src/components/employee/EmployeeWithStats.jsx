@@ -5,7 +5,7 @@ import EmployeeCard from "./EmployeeCard";
 import EmployeeSearch from "./EmployeeSearch";
 
 const StatCard = (
-  { label, value, accent = false }, // Common component to display a single statistic card
+  { label, value, accent = false },
 ) => (
   <div
     className={`rounded-xl border p-5 flex flex-col justify-center ${
@@ -22,7 +22,7 @@ const StatCard = (
 );
 
 const StatBreakdown = (
-  { label, data }, // Component to display a breakdown of statistics (e.g., by department or role)
+  { label, data },
 ) => (
   <div className="rounded-xl border border-slate-200 bg-white p-5">
     <p className="text-sm font-medium text-slate-500">{label}</p>
@@ -53,14 +53,14 @@ const EmployeeWithStats = ({
   loadingAll,
   onSeeAll,
 }) => {
-  const [expanded, setExpanded] = useState(false); // State to track whether the full list of employees diplay or not
-  const [searchQuery, setSearchQuery] = useState(""); // It tracks the state user enters int the search input field
+  const [expanded, setExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const isSearchActive = searchQuery.trim().length > 0; // It check whether user has entered something in search input
+  const isSearchActive = searchQuery.trim().length > 0;
 
-  // Only hit the query, when there is an actual query.
+  // Avoid issuing a request until the user enters a non-empty search term.
   const {
-    data: filteredEmployees, // It will fetch the filtered employees data from the server using the query entered in above search input field
+    data: filteredEmployees,
     isLoading: isSearching,
     isError: isSearchError,
   } = useGetFilteredEmployees(searchQuery, {
@@ -68,14 +68,13 @@ const EmployeeWithStats = ({
   });
 
   const handleSeeAll = () => {
-    // It will set the expanded state true and call the onSeeAll function if allEmployees is not available
     setExpanded(true);
     if (!allEmployees) onSeeAll?.();
   };
 
-  let visibleEmployees = expanded && allEmployees ? allEmployees : employees; // Decide what to show. Every branch falls back to a real array,
+  let visibleEmployees = expanded && allEmployees ? allEmployees : employees;
   if (isSearchActive) {
-    // If search is active show the filtered employees instead of the full list
+    // Search results take precedence over the expanded or default employee list.
     visibleEmployees = filteredEmployees ?? [];
   }
 
@@ -97,7 +96,6 @@ const EmployeeWithStats = ({
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="w-full sm:max-w-md">
           <EmployeeSearch onSearch={(query) => setSearchQuery(query ?? "")} />{" "}
-          {/* It will render the EmployeeSearch component  */}
         </div>
       </div>
 
@@ -126,7 +124,6 @@ const EmployeeWithStats = ({
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {/* It will render the all Employee Cards */}
             {visibleEmployees.map((emp, idx) => (
               <EmployeeCard
                 key={emp._id ?? idx}

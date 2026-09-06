@@ -9,7 +9,7 @@ const EmployeeDirectoryHeader = () => {
   const { mutateAsync: addEmployee, isPending } = useAddEmployee();
 
   
-  useEffect(() => {                                               // Prevent background scrolling when modal is open
+  useEffect(() => {                                               // Prevent background scrolling while the modal is open.
     document.body.style.overflow = isModalOpen ? "hidden" : "";
 
     return () => {
@@ -18,7 +18,7 @@ const EmployeeDirectoryHeader = () => {
   }, [isModalOpen]);
 
   
-  const handleAddEmployee = async (data) => {                // Form submission handler to add a new Employee
+  const handleAddEmployee = async (data) => {
     await addEmployee(data);
     setIsModalOpen(false);
   };
@@ -48,7 +48,7 @@ const EmployeeDirectoryHeader = () => {
         </Button>
       </div>
 
-      <Modal                               // Modal component to add a new Employee
+      <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Add Employee"
