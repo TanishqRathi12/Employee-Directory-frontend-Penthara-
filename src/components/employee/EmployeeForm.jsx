@@ -1,30 +1,61 @@
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Button from "../common/Button";
 import ErrorMessage from "../common/ErrorMessage";
 import Input from "../common/Input";
 
-const EmployeeForm = ({ defaultValues, onSubmit, onCancel, submitting,isEditing }) => {
+const EmployeeForm = ({
+  defaultValues,
+  onSubmit,
+  onCancel,
+  submitting,
+  isEditing,
+}) => {
   const { control, handleSubmit, setError } = useForm({ defaultValues });
-
+  const [submitError, setSubmitError] = useState("");
 
   /**
    * Submits employee data and maps duplicate-email responses to the email field.
    */
   const handleFormSubmit = async (data) => {
+    setSubmitError("");
     try {
       await onSubmit(data);
     } catch (err) {
+      const isTimeout = err.message?.toLowerCase().includes("timeout");
+      const backendMessage =
+        err.response?.data?.message || err.response?.data?.error || err.message;
+
+      if (isTimeout) {
+        setSubmitError(
+          "The request timed out. Please check your internet connection and try again.",
+        );
+        return;
+      }
+
       if (err.response?.status === 400) {
+        const message = backendMessage || "This email already exists.";
         setError("email", {
           type: "server",
-          message: err.response.data?.message || "This email already exists.",
+          message,
         });
+        return;
       }
+
+      setSubmitError(
+        backendMessage || "Unable to save employee. Please try again.",
+      );
     }
   };
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
+      {submitError && (
+        <ErrorMessage
+          message={submitError}
+          className="mb-4 text-sm text-red-600"
+        />
+      )}
       <Input
         name="name"
         control={control}
@@ -42,20 +73,22 @@ const EmployeeForm = ({ defaultValues, onSubmit, onCancel, submitting,isEditing 
         placeholder="Enter full name"
       />
 
-      {!isEditing && (<Input
-        name="email"
-        control={control}
-        rules={{
-          required: "Email is required",
-          pattern: {
-            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: "Enter a valid email",
-          },
-        }}
-        label="Email"
-        type="email"
-        placeholder="Enter email"
-      />)}
+      {!isEditing && (
+        <Input
+          name="email"
+          control={control}
+          rules={{
+            required: "Email is required",
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: "Enter a valid email",
+            },
+          }}
+          label="Email"
+          type="email"
+          placeholder="Enter email"
+        />
+      )}
       <Controller
         name="department"
         control={control}
@@ -102,7 +135,7 @@ const EmployeeForm = ({ defaultValues, onSubmit, onCancel, submitting,isEditing 
         placeholder="Enter role"
       />
 
-      <div className="flex justify-content-end gap-2 mt-4">
+      <div className="flex justify-end gap-2 mt-4">
         {onCancel && (
           <Button
             type="button"

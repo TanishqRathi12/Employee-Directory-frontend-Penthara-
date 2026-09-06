@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useScrollStop from "../../hooks/useScrollStop";
 import { useAddEmployee } from "../../query/employeeQueries";
 import Button from "../common/Button";
 import Modal from "../common/Modal";
@@ -8,16 +9,8 @@ const EmployeeDirectoryHeader = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { mutateAsync: addEmployee, isPending } = useAddEmployee();
 
-  
-  useEffect(() => {                                               // Prevent background scrolling while the modal is open.
-    document.body.style.overflow = isModalOpen ? "hidden" : "";
+  useScrollStop(isModalOpen); // Custom hook to prevent background scrolling when the modal is open
 
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isModalOpen]);
-
-  
   const handleAddEmployee = async (data) => {
     await addEmployee(data);
     setIsModalOpen(false);
@@ -52,8 +45,6 @@ const EmployeeDirectoryHeader = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Add Employee"
-        className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm"
-        contentClassName="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl"
       >
         <EmployeeForm
           onSubmit={handleAddEmployee}

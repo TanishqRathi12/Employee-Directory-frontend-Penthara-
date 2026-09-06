@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useScrollStop from "../../hooks/useScrollStop";
 import { useEditEmployee } from "../../query/employeeQueries";
 import Button from "../common/Button";
 import Modal from "../common/Modal";
@@ -8,13 +9,7 @@ const EmployeeCard = ({ id, name, department, role }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { mutateAsync: editEmployee, isPending } = useEditEmployee();
 
-  useEffect(() => {
-    document.body.style.overflow = isModalOpen ? "hidden" : "";
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isModalOpen]);
+  useScrollStop(isModalOpen);
 
   const handleEditEmployee = async (data) => {
     await editEmployee({ id, data });
@@ -61,8 +56,6 @@ const EmployeeCard = ({ id, name, department, role }) => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           title="Edit Employee"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm"
-          contentClassName="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl"
         >
           <EmployeeForm
             onSubmit={handleEditEmployee}

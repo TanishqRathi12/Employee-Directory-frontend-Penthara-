@@ -1,14 +1,16 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import EmployeeDirectory from "./pages/EmployeeDirectory";
 import NotFound from "./pages/NotFound";
 
 const App = () => {
-  const path = window.location.pathname;
-
-  if (path === "/") {
-    return <EmployeeDirectory />; // Main page
-  }
-  
-  return <NotFound />; // Fallback page 
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<EmployeeDirectory />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default App;

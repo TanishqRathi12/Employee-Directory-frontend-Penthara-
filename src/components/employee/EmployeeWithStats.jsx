@@ -3,13 +3,9 @@ import { useGetFilteredEmployees } from "../../query/employeeQueries";
 import EmployeeCard from "./EmployeeCard";
 import EmployeeSearch from "./EmployeeSearch";
 
-const StatCard = ({ label, value, accent = false }) => (
+const StatCard = ({ label, value }) => (
   <div
-    className={`rounded-xl border p-5 flex flex-col justify-center ${
-      accent
-        ? "border-transparent bg-white text-white shadow-sm"
-        : "border-slate-200 bg-white"
-    }`}
+    className="flex flex-col justify-center rounded-xl border border-slate-200 bg-white p-5"
   >
     <p className="text-sm text-[#0F172A]">{label}</p>
     <p className="mt-2 text-3xl font-bold tracking-tight text-[#0F172A]">
@@ -57,9 +53,7 @@ const EmployeeWithStats = ({
     data: filteredEmployees,
     isLoading: isSearching,
     isError: isSearchError,
-  } = useGetFilteredEmployees(searchQuery, {
-    enabled: isSearchActive,
-  });
+  } = useGetFilteredEmployees(searchQuery);
 
   let visibleEmployees = employees;
   // Search results take precedence over the paginated employee list.
@@ -73,7 +67,6 @@ const EmployeeWithStats = ({
         <StatCard
           label="Total Employees"
           value={stats?.totalEmployees ?? 0}
-          accent
         />
         <StatBreakdown
           label="By Department"
