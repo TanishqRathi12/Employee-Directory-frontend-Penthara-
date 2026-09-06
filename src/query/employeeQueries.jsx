@@ -1,14 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";  // Importing the toast function from the sonner library for displaying notifications
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import {
   addEmployee,
   editEmployee,
-  getAllEmployees,
   getEmployees,
   getFilteredEmployees,
   getStatistics,
-} from "../services/employeeApi";
+} from "../service/EmployeeApi";
 
 /*
    Query Keys
@@ -21,27 +25,25 @@ export const employeeKeys = {
   filtered: (query) => ["employees", "filtered", query],
 };
 
+const PAGE_LIMIT = 6;
+
 /*
-   GET Employees
+   GET Employees (infinite/paginated)
 */
 
 export const useEmployees = () => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: employeeKeys.all,
-    queryFn: getEmployees,
+    queryFn: ({ pageParam = 1 }) =>
+      getEmployees({ page: pageParam, limit: PAGE_LIMIT }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const fetchedCount = lastPage?.data?.employees?.length ?? 0;
+      return fetchedCount < PAGE_LIMIT ? undefined : allPages.length + 1;
+    },
   });
 };
 
-/*
-   GET All Employees
-*/
-
-export const useAllEmployees = () => {
-  return useQuery({
-    queryKey: employeeKeys.list,
-    queryFn: getAllEmployees,
-  });
-};
 
 /*
    GET Statistics
@@ -65,22 +67,11 @@ export const useAddEmployee = () => {
     mutationFn: addEmployee,
 
     onSuccess: (_, variables) => {
+      toast.success(`${variables?.name} added successfully!`);
 
-      toast.success(`${variables?.name} added successfully!`); // Display a success notification using the toast function from the sonner library
-
-      // Invalidate employee lists
-
-      queryClient.invalidateQueries({
-        queryKey: employeeKeys.all,
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: employeeKeys.list,
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: employeeKeys.statistics,
-      });
+      queryClient.invalidateQueries({ queryKey: employeeKeys.all });
+      queryClient.invalidateQueries({ queryKey: employeeKeys.list });
+      queryClient.invalidateQueries({ queryKey: employeeKeys.statistics });
     },
   });
 };
@@ -98,28 +89,18 @@ export const useEditEmployee = () => {
     onSuccess: (_, variables) => {
       const employeeId = variables?.id || variables?.employeeId;
 
-      toast.success(`${variables?.data?.name} updated successfully!`); // Display a success notification using the toast function from the sonner library
+      toast.success(`${variables?.data?.name} updated successfully!`);
 
-      // Invalidate employee lists
-      queryClient.invalidateQueries({
-        queryKey: employeeKeys.all,
-      });
+      queryClient.invalidateQueries({ queryKey: employeeKeys.all });
+      queryClient.invalidateQueries({ queryKey: employeeKeys.list });
 
-      queryClient.invalidateQueries({
-        queryKey: employeeKeys.list,
-      });
-
-      // Invalidate specific employee
       if (employeeId !== undefined && employeeId !== null) {
         queryClient.invalidateQueries({
           queryKey: employeeKeys.detail(employeeId),
         });
       }
 
-      // Statistics also changed
-      queryClient.invalidateQueries({
-        queryKey: employeeKeys.statistics,
-      });
+      queryClient.invalidateQueries({ queryKey: employeeKeys.statistics });
     },
   });
 };

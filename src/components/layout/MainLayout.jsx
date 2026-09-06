@@ -1,51 +1,55 @@
-import {
-    useAllEmployees,
-    useEmployees,
-    useGetStatistics,
-} from "../../query/employeeQueries";
+import { useMemo } from "react";
+import { useEmployees, useGetStatistics } from "../../query/employeeQueries";
 import ErrorMessage from "../common/ErrorMessage";
 import Loader from "../common/Loader";
 import EmployeeWithStats from "../employee/EmployeeWithStats";
 
-const MaineLayout = () => {
-
-  const {                             // It will fetch the employees data from the server using the useEmployees query
-    data: employees,
+const MainLayout = () => {
+  const {
+    // Infinite query: fetches employees page by page
+    data: employeesPages,
     isLoading: employeesLoading,
     isError: employeesError,
-  } = useEmployees();  
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useEmployees();
 
-  const {                             // It will fetch the statistics data from the server using the useGetStatistics query
+  const {
+    // It will fetch the statistics data from the server
     data: statistics,
     isLoading: statisticsLoading,
     isError: statisticsError,
   } = useGetStatistics();
 
-  const {                             // It will fetch all employees data from the server using the useAllEmployees query
-    data: allEmployees,
-    isLoading: allEmployeesLoading,
-    isError: allEmployeesError,
-  } = useAllEmployees();
+  // Flatten all fetched pages into a single employees array
+  const employees = useMemo(
+    () =>
+      employeesPages?.pages.flatMap((page) => page?.data?.employees ?? []) ??
+      [],
+    [employeesPages],
+  );
 
-  if (employeesLoading || statisticsLoading || allEmployeesLoading) {
-    return <Loader />;                // Show loading while the data is fetched.
+  if (employeesLoading || statisticsLoading) {
+    return <Loader />; 
   }
 
-  if (employeesError || statisticsError || allEmployeesError) {       // Show error message if there is an error
+  if (employeesError || statisticsError) {
     return (
       <ErrorMessage message="Failed to load data. Please try again later." />
     );
   }
   return (
     <div>
-      <EmployeeWithStats                         // It will render the EmployeeWithStats Component and pass the all the data fetched from server
-        employees={employees.data}
+      <EmployeeWithStats // It will render the EmployeeWithStats Component and pass the all the data fetched from server
+        employees={employees}
         stats={statistics.data}
-        allEmployees={allEmployees.data}
-        loadingAll={allEmployeesLoading}
+        hasMore={hasNextPage}
+        loadingMore={isFetchingNextPage}
+        onLoadMore={fetchNextPage}
       />
     </div>
   );
 };
 
-export default MaineLayout;
+export default MainLayout;

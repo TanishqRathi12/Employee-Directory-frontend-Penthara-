@@ -1,18 +1,10 @@
-import instance from "./axios";
+import instance from "./Axios";
 
 /**
- * Fetches the initial employee data from the backend.
+ * Fetches a page of employees from the backend.
  */
-export const getEmployees = async () => {
-    const response = await instance.get("/");
-    return response.data;
-}
-
-/**
- * Fetches all employee data from the backend.
- */
-export const getAllEmployees = async () => {
-    const response = await instance.get("/all");
+export const getEmployees = async ({ page = 1, limit = 6 } = {}) => {
+    const response = await instance.get("/", { params: { page, limit } });
     return response.data;
 }
 
@@ -23,7 +15,6 @@ export const addEmployee = async (employeeData) => {
     const response = await instance.post("/add", employeeData);
     return response.data;
 }
-
 
 /**
  * Edits an existing employee's data in the backend.
@@ -48,4 +39,3 @@ export const getFilteredEmployees = async (query) => {
     const response = await instance.get(`/search?filter=${encodeURIComponent(query)}`);
     return response.data.data;
 }
-
